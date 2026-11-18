@@ -70,7 +70,7 @@ export function resolveFactText(t: Text, lang: Lang): string {
   return t[lang];
 }
 
-/** Parent area fact cards: claims, sources, and simplifications in EN, DE, and PL. */
+/** Parent area fact cards: claims, sources, and simplifications in EN, DE, and PL. Served by /api from MySQL. */
 export interface FactCard {
   /** At least 5. Each claim the lesson makes, with a primary or authoritative source URL. */
   claims: { text: Text; source: string }[];
@@ -92,5 +92,4 @@ export interface Lesson {
   askDad: Text;
   /** The Germany/India/Poland card shown after the badge */
   realLife: { title: Text; body: Text };
-  factCard: FactCard;
 }
