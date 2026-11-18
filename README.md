@@ -44,13 +44,13 @@ You need Go 1.24 or newer and MySQL 8.4.
 
 API, all read-only:
 
-| Endpoint | Returns |
-|---|---|
-| `GET /api/groups` | Groups in order, each with its lessons (`position` is the save-code order) |
-| `GET /api/facts` | Every lesson's fact card |
-| `GET /api/lessons/{id}/facts` | One lesson's fact card, 404 if unknown |
-| `GET /api/timeline` | Eras, regions, events and meanwhile cards |
-| `GET /api/healthz` | `ok` when MySQL answers, 503 otherwise |
+| Endpoint                      | Returns                                                                    |
+| ----------------------------- | -------------------------------------------------------------------------- |
+| `GET /api/groups`             | Groups in order, each with its lessons (`position` is the save-code order) |
+| `GET /api/facts`              | Every lesson's fact card                                                   |
+| `GET /api/lessons/{id}/facts` | One lesson's fact card, 404 if unknown                                     |
+| `GET /api/timeline`           | Eras, regions, events and meanwhile cards                                  |
+| `GET /api/healthz`            | `ok` when MySQL answers, 503 otherwise                                     |
 
 Backend tests: `cd backend && go test ./...`. With `MYSQL_DSN` set, they also check the loaded data (counts, at least 5 sourced claims per lesson, links between tables).
 
