@@ -1,0 +1,129 @@
+.sv {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.sv-facts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 18px;
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.sv-fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sv-split {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.sv-split-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 800;
+  margin-right: 6px;
+}
+
+.sv-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 38px;
+  border-radius: 10px;
+  border: 2px solid var(--grey);
+  background: var(--white);
+}
+
+.sv-tile-bike {
+  border-color: var(--green);
+}
+
+.sv-tile-rain {
+  border-color: var(--teal);
+}
+
+.sv-tile-treat {
+  border-color: #f06a8d;
+}
+
+.sv-grid {
+  display: grid;
+  grid-template-columns: 74px repeat(15, minmax(0, 1fr));
+  gap: 3px;
+  align-items: stretch;
+  font-size: 0.85rem;
+}
+
+.sv-head {
+  font-weight: 800;
+  text-align: left;
+  align-self: center;
+  line-height: 1.1;
+}
+
+.sv-cell {
+  background: var(--white);
+  border: 2px solid var(--grey);
+  border-radius: 8px;
+  min-height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.sv-week {
+  background: transparent;
+  border-color: transparent;
+  min-height: 28px;
+  font-size: 0.85rem;
+}
+
+.sv-cell.sv-done {
+  opacity: 0.45;
+}
+
+.sv-cell.sv-week.sv-buy {
+  background: #d8f0c8;
+  border-color: var(--green);
+}
+
+.sv-cell.sv-week.sv-rain {
+  background: var(--white);
+  border-color: var(--teal);
+}
+
+.sv-say {
+  min-height: 2.7em;
+  font-weight: 700;
+  background: var(--white);
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  padding: 4px 12px;
+  margin: 0;
+  text-align: left;
+}
+
+.sv-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.sv-head .inline-icon {
+  margin: 0 auto 0 0;
+}

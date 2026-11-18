@@ -1,0 +1,20 @@
+.tb {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+/* keep the toy inside a 1366x768 window, also in German */
+.tb .slider {
+  gap: 2px;
+}
+
+.tb .slider input[type="range"] {
+  height: 28px;
+}
+
+.tb .diagram {
+  max-height: 31vh;
+}

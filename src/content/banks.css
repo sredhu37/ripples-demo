@@ -1,0 +1,63 @@
+.bk {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.bk-svg {
+  max-height: 32vh;
+}
+
+.bk-says {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bk-say {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.92rem;
+  background: var(--white);
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  padding: 4px 10px;
+}
+
+.bk-say-bad {
+  border-color: #c0392b;
+  background: #fdeaea;
+}
+
+.bk-controls {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px 16px;
+  flex-wrap: nowrap;
+}
+
+.bk-controls .slider {
+  width: 200px;
+  gap: 2px;
+}
+
+.bk-controls .slider-label {
+  font-size: 0.95rem;
+}
+
+.bk-controls .slider input[type="range"] {
+  height: 24px;
+}
+
+.bk-buttons {
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+.bk-buttons .btn {
+  min-height: 50px;
+  padding-left: 14px;
+  padding-right: 14px;
+}

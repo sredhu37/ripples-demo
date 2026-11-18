@@ -1,0 +1,47 @@
+.pr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.pr-canvas {
+  max-height: 34vh;
+}
+
+.pr-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: var(--white);
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  padding: 2px 16px;
+}
+
+.pr-tag.up {
+  background: #fde0c8;
+  border-color: var(--orange);
+}
+
+.pr-tag.same {
+  background: #dcf1de;
+  border-color: var(--green);
+}
+
+.pr-tag.down {
+  background: #d8eef2;
+  border-color: var(--teal);
+}
+
+.pr-say {
+  font-size: 1rem;
+  min-height: 1.4em;
+}
+
+.pr-btns .btn-toy {
+  padding: 0 12px;
+}
