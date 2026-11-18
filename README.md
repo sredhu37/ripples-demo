@@ -1,29 +1,35 @@
-# Project name
+# Ripples demo
 
-One sentence on what this does and who it is for.
+Ripples is a kids' money and economics app: lessons told by Otto the otter, in English, German and Polish. This repository is the starting point for a hands-on demo: containerize the app, then deploy it on GCP and GKE, one stage at a time.
 
 [![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-Ko--fi-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/sunnyredhu)
 
-## Getting started
+## Run it locally
+
+You need Node.js 22.12 or newer and npm.
 
 ```bash
-# install and run steps
+npm ci
+npm run dev
 ```
 
-## Usage
+Other commands: `npm run test`, `npm run lint`, `npm run typecheck`, `npm run build`.
 
-Short example.
+## Follow along
 
-## Working with AI agents
-
-- Rules and definition of done: [AGENTS.md](AGENTS.md)
-- Architecture map: [ARCHITECTURE.md](ARCHITECTURE.md), vocabulary: [GLOSSARY.md](GLOSSARY.md), decisions: [docs/adr](docs/adr)
-- Project skills: [.claude/skills](.claude/skills) (`/demo`)
-- Matt Pocock skills (`/grill-with-docs`, `/wayfinder`, `/triage`, `/handoff`, `/tdd`) are enabled in `.claude/settings.json`. Install once per clone:
+`main` holds the plain application code, with no Dockerfile or deploy files. Each stage of the demo is a branch named `v1`, `v2`, and so on. Check one out to see the repository as it is at the end of that stage:
 
 ```bash
-claude plugin install mattpocock-skills@claude-plugins-official --scope project
+git checkout v1
 ```
+
+Compare two stages to see exactly what a step added: `https://github.com/sredhu37/ripples-demo/compare/v1...v2`.
+
+Version branches are frozen. They cannot be changed or deleted after they are created.
+
+## Licence
+
+The code is PolyForm Noncommercial and the lesson content is CC BY-NC-ND. Containerizing it, deploying it to your own cluster and practising DevOps on it is fine. See [LICENSING.md](LICENSING.md).
 
 ## Support
 
