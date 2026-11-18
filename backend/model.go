@@ -13,6 +13,8 @@ type Lesson struct {
 	ID       string `json:"id"`
 	Position int    `json:"position"`
 	Title    Text   `json:"title"`
+	// HasMeanwhile tells the app to fetch the timeline at the end of this lesson.
+	HasMeanwhile bool `json:"hasMeanwhile"`
 }
 
 // Group lists its lessons in group order.

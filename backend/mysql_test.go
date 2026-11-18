@@ -48,6 +48,9 @@ func TestMySQLContent(t *testing.T) {
 			}
 			lessons[l.ID] = true
 			positions[l.Position] = true
+			if _, ok := tl.Meanwhile[l.ID]; ok != l.HasMeanwhile {
+				t.Errorf("lesson %s hasMeanwhile = %v, meanwhile card present = %v", l.ID, l.HasMeanwhile, ok)
+			}
 			texts = append(texts, l.Title)
 		}
 	}

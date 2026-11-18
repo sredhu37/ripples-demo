@@ -41,9 +41,10 @@ func (s *MySQLStore) Ping(ctx context.Context) error {
 func (s *MySQLStore) Groups(ctx context.Context) ([]Group, error) {
 	rows, err := s.db.QueryContext(ctx, `
 		SELECT g.id, g.title_en, g.title_de, g.title_pl,
-		       l.id, l.position, l.title_en, l.title_de, l.title_pl
+		       l.id, l.position, l.title_en, l.title_de, l.title_pl, m.lesson_id IS NOT NULL
 		FROM curriculum_groups g
 		JOIN lessons l ON l.group_id = g.id
+		LEFT JOIN meanwhile m ON m.lesson_id = l.id
 		ORDER BY g.position, l.group_position`)
 	if err != nil {
 		return nil, fmt.Errorf("query groups: %w", err)
@@ -54,7 +55,7 @@ func (s *MySQLStore) Groups(ctx context.Context) ([]Group, error) {
 		var g Group
 		var l Lesson
 		if err := rows.Scan(&g.ID, &g.Title.En, &g.Title.De, &g.Title.Pl,
-			&l.ID, &l.Position, &l.Title.En, &l.Title.De, &l.Title.Pl); err != nil {
+			&l.ID, &l.Position, &l.Title.En, &l.Title.De, &l.Title.Pl, &l.HasMeanwhile); err != nil {
 			return nil, fmt.Errorf("scan group: %w", err)
 		}
 		if n := len(groups); n == 0 || groups[n-1].ID != g.ID {

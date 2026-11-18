@@ -35,7 +35,7 @@ func newFake() *fakeStore {
 		groups: []Group{{
 			ID:      "group1",
 			Title:   Text{En: "Group 1", De: "Gruppe 1", Pl: "Grupa 1"},
-			Lessons: []Lesson{{ID: "money", Position: 0, Title: money}},
+			Lessons: []Lesson{{ID: "money", Position: 0, Title: money, HasMeanwhile: true}},
 		}},
 		facts: []FactCard{{
 			LessonID:   "money",
@@ -76,7 +76,7 @@ func TestGroups(t *testing.T) {
 		t.Fatalf("status %d", rec.Code)
 	}
 	groups := decode[[]Group](t, rec)
-	if len(groups) != 1 || groups[0].Lessons[0].Title.Pl != "Czym są pieniądze?" {
+	if len(groups) != 1 || groups[0].Lessons[0].Title.Pl != "Czym są pieniądze?" || !groups[0].Lessons[0].HasMeanwhile {
 		t.Fatalf("got %+v", groups)
 	}
 }
