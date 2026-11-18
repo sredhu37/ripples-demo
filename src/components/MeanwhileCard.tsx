@@ -3,18 +3,20 @@ import { t } from "../i18n";
 import { resolveText } from "../lesson/types";
 import type { Lang } from "../progress";
 import { REGION_KEY } from "./TimelineScreen";
-import { eventYear } from "../timeline/data";
-import { snapshotAt, type Meanwhile } from "../timeline/meanwhile";
+import { eventYear, snapshotAt } from "../timeline/events";
+import type { Meanwhile, TimelineEvent } from "../timeline/types";
 
 interface Props {
   meanwhile: Meanwhile;
+  /** All timeline events; the card picks the ones inside its window. */
+  events: TimelineEvent[];
   lang: Lang;
 }
 
 /** "Meanwhile around the world": a year slider showing the latest event on each track. */
-export function MeanwhileCard({ meanwhile, lang }: Props) {
+export function MeanwhileCard({ meanwhile, events, lang }: Props) {
   const [year, setYear] = useState(meanwhile.from);
-  const shown = snapshotAt(meanwhile, year);
+  const shown = snapshotAt(events, meanwhile, year);
 
   return (
     <div className="card meanwhile">

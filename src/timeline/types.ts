@@ -33,4 +33,13 @@ export interface TimelineEvent {
   summary: Text;
   lessonId?: string;
   keyFigure?: string;
+  /** Reference URL for the claim a meanwhile card makes about this event. */
+  source?: string;
+}
+
+/** "Meanwhile around the world" window shown at the end of a history lesson. */
+export interface Meanwhile {
+  from: number;
+  to: number;
+  text: Text;
 }

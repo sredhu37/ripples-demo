@@ -111,23 +111,6 @@ const ALL: Record<string, Lesson | undefined> = {
   scarcity_prices,
 };
 
-import { EVENT_SOURCES, MEANWHILE, meanwhileEvents } from "../timeline/meanwhile";
-
-// Every concurrent event a history lesson shows also appears on its fact card, with a source.
-for (const [lessonId, m] of Object.entries(MEANWHILE)) {
-  const lesson = ALL[lessonId];
-  if (!lesson) continue;
-  for (const e of meanwhileEvents(m)) {
-    const source = EVENT_SOURCES[e.id];
-    if (!source) continue;
-    const line = (l: "en" | "de" | "pl") => `${e.year[l]}: ${e.title[l]}. ${e.summary[l]}`;
-    lesson.factCard.claims.push({
-      text: { en: line("en"), de: line("de"), pl: line("pl") },
-      source,
-    });
-  }
-}
-
 export function getLesson(id: string): Lesson | undefined {
   return ALL[id];
 }

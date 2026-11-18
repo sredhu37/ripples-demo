@@ -1,16 +1,11 @@
 import { useState } from "react";
-import {
-  CURRICULUM_GROUPS,
-  LESSONS,
-  LESSON_ORDER,
-  getGroupTitle,
-  getLessonTitle,
-} from "../lessons";
+import { getGroupTitle, getLessonTitle, type Curriculum } from "../lessons";
 import { t } from "../i18n";
 import { exportCode, importCode, type Progress, type Lang } from "../progress";
 import { LangSwitch } from "./LangSwitch";
 
 interface Props {
+  curriculum: Curriculum;
   progress: Progress;
   onRestore: (p: Progress) => void;
   onReset: () => void;
@@ -26,6 +21,7 @@ function makeGate() {
 
 /** Parent area. A small multiplication gate keeps a young child out of it. */
 export function ParentPanel({
+  curriculum,
   progress,
   onRestore,
   onReset,
@@ -43,7 +39,7 @@ export function ParentPanel({
   const [message, setMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const code = exportCode(progress, LESSON_ORDER);
+  const code = exportCode(progress, curriculum.order);
 
   if (!open) {
     return (
@@ -93,8 +89,8 @@ export function ParentPanel({
         <h2>{t(lang, "lessonSelectionTitle")}</h2>
         <p>{t(lang, "lessonSelectionHelp")}</p>
         <div className="curriculum-groups">
-          {CURRICULUM_GROUPS.map((group) => {
-            const groupLessons = LESSONS.filter((l) => group.lessonIds.includes(l.id));
+          {curriculum.groups.map((group) => {
+            const groupLessons = curriculum.lessons.filter((l) => group.lessonIds.includes(l.id));
             const disabledCount = groupLessons.filter((l) =>
               progress.disabledLessons?.includes(l.id),
             ).length;
@@ -183,7 +179,7 @@ export function ParentPanel({
           className="btn"
           type="button"
           onClick={() => {
-            const restored = importCode(pasted, LESSON_ORDER);
+            const restored = importCode(pasted, curriculum.order);
             if (restored) {
               onRestore({ ...restored, muted: progress.muted });
               setMessage(t(restored.lang, "restoreOk"));

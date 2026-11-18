@@ -3,14 +3,18 @@ import { t, type UiKey } from "../i18n";
 import { resolveText } from "../lesson/types";
 import type { Lang } from "../progress";
 import { sfx } from "../sound";
-import { eventsFor, TIMELINE_ERAS, TIMELINE_REGIONS } from "../timeline/data";
+import { fetchTimeline, useApi, type TimelineData } from "../api";
+import { eventsFor } from "../timeline/events";
 import type { TimelineRegion } from "../timeline/types";
+import { LoadError, Loading } from "./ApiStatus";
 import { LangSwitch } from "./LangSwitch";
 
 interface Props {
   lang: Lang;
   onLang: (l: Lang) => void;
   onClose: () => void;
+  /** Where the data comes from. Tests pass a stub. */
+  load?: () => Promise<TimelineData>;
 }
 
 export const REGION_KEY: Record<TimelineRegion, UiKey> = {
@@ -31,20 +35,8 @@ const REGION_COLOR: Record<TimelineRegion, string> = {
   science: "#eab308",
 };
 
-export function TimelineScreen({ lang, onLang, onClose }: Props) {
-  const [eraIndex, setEraIndex] = useState(0);
-  const [region, setRegion] = useState<TimelineRegion | "all">("all");
-  const era = TIMELINE_ERAS[eraIndex];
-  const events = eventsFor(era.id, region);
-  const lanes = (region === "all" ? TIMELINE_REGIONS : [region]).filter((r) =>
-    events.some((e) => e.region === r),
-  );
-
-  const pickEra = (i: number) => {
-    sfx.tap();
-    setEraIndex(i);
-  };
-
+export function TimelineScreen({ lang, onLang, onClose, load = fetchTimeline }: Props) {
+  const { result, retry } = useApi(load);
   return (
     <main className="screen timeline-screen">
       <header className="topbar">
@@ -56,7 +48,29 @@ export function TimelineScreen({ lang, onLang, onClose }: Props) {
           </button>
         </div>
       </header>
+      {result.state === "loading" && <Loading lang={lang} />}
+      {result.state === "error" && <LoadError lang={lang} onRetry={retry} />}
+      {result.state === "ok" && <TimelineBody lang={lang} timeline={result.data} />}
+    </main>
+  );
+}
 
+function TimelineBody({ lang, timeline }: { lang: Lang; timeline: TimelineData }) {
+  const [eraIndex, setEraIndex] = useState(0);
+  const [region, setRegion] = useState<TimelineRegion | "all">("all");
+  const era = timeline.eras[eraIndex];
+  const events = eventsFor(timeline.events, era.id, region);
+  const lanes = (region === "all" ? timeline.regions : [region]).filter((r) =>
+    events.some((e) => e.region === r),
+  );
+
+  const pickEra = (i: number) => {
+    sfx.tap();
+    setEraIndex(i);
+  };
+
+  return (
+    <>
       <p className="timeline-help">{t(lang, "timelineHelp")}</p>
 
       <svg
@@ -74,8 +88,8 @@ export function TimelineScreen({ lang, onLang, onClose }: Props) {
           strokeWidth="4"
           strokeLinecap="round"
         />
-        {TIMELINE_ERAS.map((e, i) => {
-          const x = 30 + (i * 640) / (TIMELINE_ERAS.length - 1);
+        {timeline.eras.map((e, i) => {
+          const x = 30 + (i * 640) / (timeline.eras.length - 1);
           return (
             <g
               key={e.id}
@@ -103,7 +117,7 @@ export function TimelineScreen({ lang, onLang, onClose }: Props) {
       </svg>
 
       <div className="timeline-eras" role="tablist" aria-label={t(lang, "timelineEra")}>
-        {TIMELINE_ERAS.map((e, i) => (
+        {timeline.eras.map((e, i) => (
           <button
             key={e.id}
             type="button"
@@ -133,7 +147,7 @@ export function TimelineScreen({ lang, onLang, onClose }: Props) {
         >
           {t(lang, "timelineAll")}
         </button>
-        {TIMELINE_REGIONS.map((r) => (
+        {timeline.regions.map((r) => (
           <button
             key={r}
             type="button"
@@ -169,6 +183,6 @@ export function TimelineScreen({ lang, onLang, onClose }: Props) {
           </ul>
         </section>
       ))}
-    </main>
+    </>
   );
 }

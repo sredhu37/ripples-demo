@@ -1,5 +1,5 @@
 import { LessonIcon } from "./appIcons";
-import { LESSONS, getLessonTitle } from "../lessons";
+import { getLessonTitle, type LessonMeta } from "../lessons";
 import { t } from "../i18n";
 import type { Lang, Progress } from "../progress";
 import { LangSwitch } from "./LangSwitch";
@@ -7,16 +7,16 @@ import { Otto } from "./Otto";
 import { SpeechBubble } from "./SpeechBubble";
 
 interface Props {
-  lessonId: string;
+  /** Undefined when the id is not in the curriculum. */
+  lesson: LessonMeta | undefined;
   progress: Progress;
   onBack: () => void;
   onLang?: (l: Lang) => void;
 }
 
 /** Stand-in until a lesson's content exists. Real lessons replace this per id. */
-export function LessonPlaceholder({ lessonId, progress, onBack, onLang }: Props) {
+export function LessonPlaceholder({ lesson, progress, onBack, onLang }: Props) {
   const lang = progress.lang;
-  const lesson = LESSONS.find((l) => l.id === lessonId);
 
   return (
     <main className="screen center">

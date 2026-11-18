@@ -1,5 +1,5 @@
 import { hasLesson } from "../content";
-import { LESSONS, getLessonTitle, LESSON_ORDER } from "../lessons";
+import { getLessonTitle, type Curriculum } from "../lessons";
 import { t } from "../i18n";
 import { lessonState, nextLessonId, type Lang, type Progress } from "../progress";
 import { sfx } from "../sound";
@@ -9,6 +9,7 @@ import { Otto } from "./Otto";
 import { SpeechBubble } from "./SpeechBubble";
 
 interface Props {
+  curriculum: Curriculum;
   progress: Progress;
   returning: boolean;
   onLang: (l: Lang) => void;
@@ -19,6 +20,7 @@ interface Props {
 }
 
 export function MapScreen({
+  curriculum,
   progress,
   returning,
   onLang,
@@ -28,11 +30,13 @@ export function MapScreen({
   onTimeline,
 }: Props) {
   const { lang, name, muted } = progress;
-  const visibleLessons = LESSONS.filter((l) => !progress.disabledLessons?.includes(l.id));
-  const next = nextLessonId(progress, LESSON_ORDER);
+  const visibleLessons = curriculum.lessons.filter(
+    (l) => !progress.disabledLessons?.includes(l.id),
+  );
+  const next = nextLessonId(progress, curriculum.order);
   const greeting =
     next === null ? t(lang, "allDone") : t(lang, returning ? "welcomeBack" : "welcome", { name });
-  const nextLesson = LESSONS.find((l) => l.id === next);
+  const nextLesson = curriculum.lessons.find((l) => l.id === next);
 
   return (
     <main className="screen">
@@ -107,7 +111,7 @@ export function MapScreen({
 
       <ol className="trail">
         {visibleLessons.map((l, i) => {
-          const state = lessonState(progress, LESSON_ORDER, l.id);
+          const state = lessonState(progress, curriculum.order, l.id);
           const open = state !== "locked";
           const title = getLessonTitle(l, lang);
           return (

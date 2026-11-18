@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { LESSONS } from "../lessons";
-import { TIMELINE_ERAS, TIMELINE_EVENTS, TIMELINE_REGIONS, eventsFor } from "./data";
 import type { Text } from "../lesson/types";
+import { seedCurriculum, seedTimeline } from "../testing/seed";
+import { eventsFor } from "./events";
+
+const LESSONS = seedCurriculum().lessons;
+const { eras: TIMELINE_ERAS, events: TIMELINE_EVENTS, regions: TIMELINE_REGIONS } = seedTimeline();
 
 function allTexts(): { where: string; text: Text }[] {
   const out: { where: string; text: Text }[] = [];
@@ -26,7 +29,7 @@ describe("world timeline data", () => {
   it("has 7 eras, each with at least 4 events", () => {
     expect(TIMELINE_ERAS).toHaveLength(7);
     for (const era of TIMELINE_ERAS)
-      expect(eventsFor(era.id, "all").length, era.id).toBeGreaterThanOrEqual(4);
+      expect(eventsFor(TIMELINE_EVENTS, era.id, "all").length, era.id).toBeGreaterThanOrEqual(4);
   });
 
   it("has unique event ids and valid eras", () => {

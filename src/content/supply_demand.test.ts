@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getLesson, hasLesson } from "./index";
+import { seedFacts } from "../testing/seed";
 import type { Lesson, Text } from "../lesson/types";
 
 function texts(l: Lesson): { where: string; text: Text }[] {
@@ -29,6 +30,7 @@ describe("Lesson 3.9: supply_demand", () => {
   });
 
   const lesson: Lesson = getLesson("supply_demand")!;
+  const card = seedFacts().find((f) => f.lessonId === "supply_demand")!;
 
   describe("content", () => {
     it("has 5 to 8 story beats", () => {
@@ -53,7 +55,7 @@ describe("Lesson 3.9: supply_demand", () => {
     });
 
     it("contains no em or en dashes", () => {
-      const all = JSON.stringify([texts(lesson), lesson.factCard]);
+      const all = JSON.stringify([texts(lesson), card]);
       expect(all).not.toMatch(/[\u2013\u2014]/);
     });
 
@@ -69,14 +71,14 @@ describe("Lesson 3.9: supply_demand", () => {
     });
 
     it("has a fact card with 5+ verified claims with https sources", () => {
-      expect(lesson.factCard.claims.length).toBeGreaterThanOrEqual(5);
-      for (const c of lesson.factCard.claims) {
+      expect(card.claims.length).toBeGreaterThanOrEqual(5);
+      for (const c of card.claims) {
         expect(c.text.en.trim()).not.toBe("");
         expect(c.text.de.trim()).not.toBe("");
         expect(c.text.pl.trim()).not.toBe("");
         expect(c.source).toMatch(/^https:\/\//);
       }
-      expect(lesson.factCard.simplified.length).toBeGreaterThanOrEqual(1);
+      expect(card.simplified.length).toBeGreaterThanOrEqual(1);
     });
   });
 });

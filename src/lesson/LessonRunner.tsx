@@ -7,7 +7,8 @@ import { t } from "../i18n";
 import { getLessonTitle, type LessonMeta } from "../lessons";
 import type { Lang } from "../progress";
 import { MeanwhileCard } from "../components/MeanwhileCard";
-import { getMeanwhile } from "../timeline/meanwhile";
+import { LoadError, Loading } from "../components/ApiStatus";
+import { fetchTimeline, useApi, type TimelineData } from "../api";
 import { sfx } from "../sound";
 import { resolveText, type Lesson, type Question } from "./types";
 
@@ -20,6 +21,8 @@ interface Props {
   onBadge: () => void;
   onExit: () => void;
   onLang?: (l: Lang) => void;
+  /** Where the meanwhile card's timeline comes from. Tests pass a stub. */
+  loadTimeline?: () => Promise<TimelineData>;
 }
 
 type Phase =
@@ -31,7 +34,16 @@ type Phase =
   | { k: "meanwhile" }
   | { k: "dad" };
 
-export function LessonRunner({ lesson, meta, lang, alreadyDone, onBadge, onExit, onLang }: Props) {
+export function LessonRunner({
+  lesson,
+  meta,
+  lang,
+  alreadyDone,
+  onBadge,
+  onExit,
+  onLang,
+  loadTimeline = fetchTimeline,
+}: Props) {
   const [phase, setPhase] = useState<Phase>({ k: "story", i: 0 });
   const [toyCompleted, setToyCompleted] = useState(false);
   const wasDone = useRef(alreadyDone);
@@ -157,7 +169,7 @@ export function LessonRunner({ lesson, meta, lang, alreadyDone, onBadge, onExit,
             <button
               type="button"
               className="btn"
-              onClick={() => setPhase(getMeanwhile(meta.id) ? { k: "meanwhile" } : { k: "dad" })}
+              onClick={() => setPhase(meta.hasMeanwhile ? { k: "meanwhile" } : { k: "dad" })}
             >
               {t(lang, "next")}
             </button>
@@ -165,9 +177,9 @@ export function LessonRunner({ lesson, meta, lang, alreadyDone, onBadge, onExit,
         </section>
       )}
 
-      {phase.k === "meanwhile" && getMeanwhile(meta.id) && (
+      {phase.k === "meanwhile" && (
         <section className="lesson-body">
-          <MeanwhileCard meanwhile={getMeanwhile(meta.id)!} lang={lang} />
+          <MeanwhileStep lessonId={meta.id} lang={lang} load={loadTimeline} />
           <div className="row nav">
             <button type="button" className="btn" onClick={() => setPhase({ k: "dad" })}>
               {t(lang, "next")}
@@ -403,4 +415,22 @@ function BadgeView({
       </div>
     </section>
   );
+}
+
+/** Fetches the timeline when a history lesson reaches its meanwhile card. */
+function MeanwhileStep({
+  lessonId,
+  lang,
+  load,
+}: {
+  lessonId: string;
+  lang: Lang;
+  load: () => Promise<TimelineData>;
+}) {
+  const { result, retry } = useApi(load);
+  if (result.state === "loading") return <Loading lang={lang} />;
+  if (result.state === "error") return <LoadError lang={lang} onRetry={retry} />;
+  const meanwhile = result.data.meanwhile[lessonId];
+  if (!meanwhile) return null;
+  return <MeanwhileCard meanwhile={meanwhile} events={result.data.events} lang={lang} />;
 }

@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { fetchGroups, useApi } from "./api";
+import { LoadError, Loading } from "./components/ApiStatus";
 import { FactCards } from "./components/FactCards";
 import { getLesson } from "./content";
 import { LessonRunner } from "./lesson/LessonRunner";
-import { LESSONS } from "./lessons";
+import { toCurriculum } from "./lessons";
 import { LessonPlaceholder } from "./components/LessonPlaceholder";
 import { MapScreen } from "./components/MapScreen";
 import { NameScreen } from "./components/NameScreen";
@@ -49,6 +51,13 @@ export function App() {
     void navigator.storage?.persist?.();
   }, []);
 
+  // Lesson titles and order come from the API at start; every other screen needs them.
+  const { result: groups, retry } = useApi(fetchGroups);
+  const curriculum = useMemo(
+    () => (groups.state === "ok" ? toCurriculum(groups.data) : null),
+    [groups],
+  );
+
   const awardBadge = useCallback((id: string) => setProgress((p) => earnBadge(p, id)), []);
 
   const setLang = (lang: Lang) => setProgress((p) => ({ ...p, lang }));
@@ -63,9 +72,22 @@ export function App() {
     );
   }
 
+  if (!curriculum) {
+    return (
+      <main className="screen center">
+        {groups.state === "error" ? (
+          <LoadError lang={progress.lang} onRetry={retry} />
+        ) : (
+          <Loading lang={progress.lang} />
+        )}
+      </main>
+    );
+  }
+
   if (screen.kind === "parents") {
     return (
       <ParentPanel
+        curriculum={curriculum}
         progress={progress}
         onRestore={setProgress}
         onFacts={() => setScreen({ kind: "facts" })}
@@ -94,6 +116,7 @@ export function App() {
     return (
       <FactCards
         lang={progress.lang}
+        lessons={curriculum.lessons}
         onLang={setLang}
         onClose={() => setScreen({ kind: "parents" })}
       />
@@ -102,7 +125,7 @@ export function App() {
 
   if (screen.kind === "lesson") {
     const lesson = getLesson(screen.id);
-    const meta = LESSONS.find((l) => l.id === screen.id);
+    const meta = curriculum.lessons.find((l) => l.id === screen.id);
     if (lesson && meta) {
       return (
         <LessonRunner
@@ -119,7 +142,7 @@ export function App() {
     }
     return (
       <LessonPlaceholder
-        lessonId={screen.id}
+        lesson={meta}
         progress={progress}
         onBack={() => setScreen({ kind: "map" })}
         onLang={setLang}
@@ -129,6 +152,7 @@ export function App() {
 
   return (
     <MapScreen
+      curriculum={curriculum}
       progress={progress}
       returning={returning}
       onLang={setLang}

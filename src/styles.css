@@ -1231,3 +1231,13 @@ mark.term {
   flex-direction: column;
   gap: 8px;
 }
+
+/* Loading and error states while the API answers */
+.api-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 16px;
+  text-align: center;
+}
