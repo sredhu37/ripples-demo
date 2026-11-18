@@ -1,0 +1,47 @@
+.loan {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.loan-sliders {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  justify-content: center;
+}
+
+.loan-sliders .slider {
+  width: min(320px, 100%);
+  gap: 2px;
+}
+
+.loan-sliders .slider input[type="range"] {
+  height: 28px;
+}
+
+.loan-picture {
+  max-height: 31vh;
+  background: var(--white);
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+}
+
+.loan-say {
+  min-height: 0;
+  font-weight: 700;
+  background: var(--white);
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  padding: 6px 12px;
+  margin: 0;
+}
+
+.loan-say.ok {
+  border-color: var(--green);
+}
+
+.loan-say.bad {
+  border-color: var(--orange);
+}

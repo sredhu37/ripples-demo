@@ -1,29 +1,23 @@
-# Project name
+# Ripples demo
 
-One sentence on what this does and who it is for.
+Ripples is a kids' money and economics app: lessons told by Otto the otter, in English, German and Polish. This repository is the starting point for a hands-on demo: containerize the app, then deploy it on GCP and GKE, one stage at a time.
 
 [![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-Ko--fi-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/sunnyredhu)
 
-## Getting started
+## Run it locally
+
+You need Node.js 22.12 or newer and npm.
 
 ```bash
-# install and run steps
+npm ci
+npm run dev
 ```
 
-## Usage
+Other commands: `npm run test`, `npm run lint`, `npm run typecheck`, `npm run build`.
 
-Short example.
+## Licence
 
-## Working with AI agents
-
-- Rules and definition of done: [AGENTS.md](AGENTS.md)
-- Architecture map: [ARCHITECTURE.md](ARCHITECTURE.md), vocabulary: [GLOSSARY.md](GLOSSARY.md), decisions: [docs/adr](docs/adr)
-- Project skills: [.claude/skills](.claude/skills) (`/demo`)
-- Matt Pocock skills (`/grill-with-docs`, `/wayfinder`, `/triage`, `/handoff`, `/tdd`) are enabled in `.claude/settings.json`. Install once per clone:
-
-```bash
-claude plugin install mattpocock-skills@claude-plugins-official --scope project
-```
+The code is PolyForm Noncommercial and the lesson content is CC BY-NC-ND. Containerizing it, deploying it to your own cluster and practising DevOps on it is fine. See [LICENSING.md](LICENSING.md).
 
 ## Support
 

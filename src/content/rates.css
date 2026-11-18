@@ -1,0 +1,123 @@
+/* Lesson 10: the town thermostat */
+.thermo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 8px 22px;
+  width: 100%;
+  align-items: center;
+  text-align: left;
+}
+
+.thermo-town {
+  grid-column: 1 / -1;
+  width: 100%;
+  height: auto;
+  max-height: 124px;
+  display: block;
+}
+
+.thermo-otto {
+  font-size: 0.95rem;
+  font-weight: 700;
+  background: var(--white);
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  padding: 6px 12px;
+  min-height: 3.6em;
+  display: flex;
+  align-items: center;
+}
+
+.thermo-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.thermo-gauges {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gauge-name {
+  font-weight: 800;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gauge-track {
+  position: relative;
+  height: 20px;
+  background: var(--white);
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.gauge-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 40%;
+  width: 20%;
+  background: rgba(35, 56, 63, 0.12);
+  border-left: 2px dashed var(--ink);
+  border-right: 2px dashed var(--ink);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.gauge-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  transition: width 0.4s linear;
+}
+
+.gauge-fill.hot {
+  background: #e4572e;
+}
+
+.gauge-fill.cold {
+  background: #4a90d9;
+}
+
+.gauge-fill.right {
+  background: var(--green);
+}
+
+.gauge-fill.jobs {
+  background: var(--teal);
+}
+
+.gauge-ends {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+.thermo-rates {
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.thermo-wait {
+  font-weight: 700;
+  color: var(--teal-dark);
+  min-height: 1.4em;
+}
+
+@media (max-width: 760px) {
+  .thermo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
