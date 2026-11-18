@@ -1,14 +1,21 @@
 import { describe, expect, it } from "vitest";
-import { getLesson } from "../content";
-import { LESSONS, CURRICULUM_GROUPS } from "../lessons";
-import { EVENT_SOURCES, MEANWHILE, getMeanwhile, meanwhileEvents, snapshotAt } from "./meanwhile";
+import { seedCurriculum, seedFacts, seedTimeline } from "../testing/seed";
+import * as helpers from "./events";
+import type { Meanwhile } from "./types";
 
+const { groups: CURRICULUM_GROUPS, lessons: LESSONS } = seedCurriculum();
+const { events: EVENTS, meanwhile: MEANWHILE } = seedTimeline();
 const GROUP5 = CURRICULUM_GROUPS.find((g) => g.id === "group5")!.lessonIds;
+const EVENT_SOURCES = Object.fromEntries(EVENTS.map((e) => [e.id, e.source]));
+const getMeanwhile = (id: string) => MEANWHILE[id];
+const meanwhileEvents = (m: Meanwhile) => helpers.meanwhileEvents(EVENTS, m);
+const snapshotAt = (m: Meanwhile, year: number) => helpers.snapshotAt(EVENTS, m, year);
 
 describe("meanwhile around the world", () => {
   it("covers every Group 5 history lesson", () => {
     expect(GROUP5).toHaveLength(8);
     for (const id of GROUP5) expect(getMeanwhile(id), id).toBeDefined();
+    for (const l of LESSONS) expect(l.hasMeanwhile, l.id).toBe(GROUP5.includes(l.id));
     expect(Object.keys(MEANWHILE).sort()).toEqual([...GROUP5].sort());
     for (const id of Object.keys(MEANWHILE)) expect(LESSONS.some((l) => l.id === id)).toBe(true);
   });
@@ -52,7 +59,7 @@ describe("meanwhile around the world", () => {
 
   it("adds a sourced fact card claim for each concurrent event", () => {
     for (const [id, m] of Object.entries(MEANWHILE)) {
-      const claims = getLesson(id)!.factCard.claims;
+      const claims = seedFacts().find((f) => f.lessonId === id)!.claims;
       for (const e of meanwhileEvents(m)) {
         expect(
           claims.some((c) => c.source === EVENT_SOURCES[e.id] && c.text.en.includes(e.title.en)),

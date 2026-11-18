@@ -5,7 +5,10 @@ import { ParentPanel } from "./ParentPanel";
 import { MapScreen } from "./MapScreen";
 import { NameScreen } from "./NameScreen";
 import { emptyProgress, type Progress } from "../progress";
-import { LESSONS, CURRICULUM_GROUPS } from "../lessons";
+import { seedCurriculum } from "../testing/seed";
+
+const CURRICULUM = seedCurriculum();
+const { groups: CURRICULUM_GROUPS, lessons: LESSONS } = CURRICULUM;
 
 // Tell React it is in a test environment so act(...) warnings are suppressed
 // @ts-expect-error test flag
@@ -30,6 +33,7 @@ describe("ParentPanel", () => {
     await act(async () => {
       root.render(
         <ParentPanel
+          curriculum={CURRICULUM}
           progress={progress}
           onRestore={() => {}}
           onReset={() => {}}
@@ -99,6 +103,7 @@ describe("ParentPanel", () => {
     await act(async () => {
       root.render(
         <ParentPanel
+          curriculum={CURRICULUM}
           progress={progress}
           onRestore={() => {}}
           onReset={() => {}}
@@ -162,6 +167,7 @@ describe("MapScreen with disabled lessons", () => {
     await act(async () => {
       root.render(
         <MapScreen
+          curriculum={CURRICULUM}
           progress={progress}
           returning={false}
           onLang={() => {}}
@@ -208,6 +214,7 @@ describe("MapScreen with disabled lessons", () => {
     await act(async () => {
       root.render(
         <MapScreen
+          curriculum={CURRICULUM}
           progress={progress}
           returning={false}
           onLang={() => {}}
@@ -242,6 +249,7 @@ describe("One age group", () => {
     await act(async () => {
       root.render(
         <ParentPanel
+          curriculum={CURRICULUM}
           progress={progress}
           onRestore={() => {}}
           onReset={() => {}}

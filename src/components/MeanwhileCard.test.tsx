@@ -4,8 +4,11 @@ import { describe, expect, it } from "vitest";
 import { MeanwhileCard } from "./MeanwhileCard";
 import { LessonRunner } from "../lesson/LessonRunner";
 import { getLesson } from "../content";
-import { LESSONS } from "../lessons";
-import { MEANWHILE, meanwhileEvents } from "../timeline/meanwhile";
+import { seedCurriculum, seedTimeline } from "../testing/seed";
+import { meanwhileEvents } from "../timeline/events";
+
+const TIMELINE = seedTimeline();
+const { events: EVENTS, meanwhile: MEANWHILE } = TIMELINE;
 
 // @ts-expect-error test flag
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
@@ -30,7 +33,7 @@ async function setYear(c: HTMLElement, year: number) {
 
 describe("MeanwhileCard", () => {
   it("starts empty and fills as the slider moves", async () => {
-    const c = await mount(<MeanwhileCard meanwhile={MEANWHILE.ww2} lang="en" />);
+    const c = await mount(<MeanwhileCard meanwhile={MEANWHILE.ww2} events={EVENTS} lang="en" />);
     expect(c.textContent).toContain("Meanwhile around the world");
     expect(c.querySelectorAll(".timeline-card")).toHaveLength(0);
     await setYear(c, 1943);
@@ -40,20 +43,22 @@ describe("MeanwhileCard", () => {
   });
 
   it("shows the single intro text, in German when asked", async () => {
-    const c = await mount(<MeanwhileCard meanwhile={MEANWHILE.ww2} lang="de" />);
+    const c = await mount(<MeanwhileCard meanwhile={MEANWHILE.ww2} events={EVENTS} lang="de" />);
     expect(c.textContent).toContain("Waehrenddessen in der Welt");
     expect(c.textContent).toContain(MEANWHILE.ww2.text.de);
   });
 
   it("shows each event's single summary", async () => {
-    const c = await mount(<MeanwhileCard meanwhile={MEANWHILE.ww2} lang="en" />);
+    const c = await mount(<MeanwhileCard meanwhile={MEANWHILE.ww2} events={EVENTS} lang="en" />);
     await setYear(c, 1943);
-    const event = meanwhileEvents(MEANWHILE.ww2).find((e) => e.title.en.includes("Bengal famine"))!;
+    const event = meanwhileEvents(EVENTS, MEANWHILE.ww2).find((e) =>
+      e.title.en.includes("Bengal famine"),
+    )!;
     expect(c.textContent).toContain(event.summary.en);
   });
 
   it("appears in the lesson runner after the real life card", async () => {
-    const meta = LESSONS.find((l) => l.id === "ww2")!;
+    const meta = seedCurriculum().lessons.find((l) => l.id === "ww2")!;
     const base = getLesson("ww2")!;
     const text = { en: "a", de: "b", pl: "c" };
     const choice = {
@@ -80,6 +85,7 @@ describe("MeanwhileCard", () => {
         alreadyDone={false}
         onBadge={() => {}}
         onExit={() => {}}
+        loadTimeline={() => Promise.resolve(TIMELINE)}
       />,
     );
     let toyClicked = false;

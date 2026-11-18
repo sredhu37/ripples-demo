@@ -2,11 +2,15 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { getLesson, hasLesson } from "./index";
-import { LESSONS } from "../lessons";
+import { seedCurriculum, seedFacts } from "../testing/seed";
 import type { Lesson, Text } from "../lesson/types";
 import type { Lang } from "../progress";
 
 const LANGS = ["en", "de", "pl"] as const;
+
+// Lesson titles, order and fact cards live in db/seed.sql; lesson bodies stay in TypeScript.
+const LESSONS = seedCurriculum().lessons;
+const FACTS = new Map(seedFacts().map((f) => [f.lessonId, f]));
 
 /**
  * Words are whitespace-separated tokens with at least one letter or digit, so "-" or "=" do not count.
@@ -195,13 +199,14 @@ describe.each(LESSONS.filter((m) => hasLesson(m.id)))("lesson $id", (meta) => {
   });
 
   it("uses no em or en dashes", () => {
-    const all = JSON.stringify([texts(lesson), lesson.factCard]);
+    const all = JSON.stringify([texts(lesson), FACTS.get(meta.id)]);
     expect(all).not.toMatch(/[\u2013\u2014]/);
   });
 
   it("has a fact card with 5 or more sourced claims in all three languages", () => {
-    expect(lesson.factCard.claims.length).toBeGreaterThanOrEqual(5);
-    for (const c of lesson.factCard.claims) {
+    const card = FACTS.get(meta.id)!;
+    expect(card.claims.length).toBeGreaterThanOrEqual(5);
+    for (const c of card.claims) {
       expect(c.text.en.trim()).not.toBe("");
       expect(c.text.de.trim()).not.toBe("");
       expect(c.text.pl.trim()).not.toBe("");
@@ -209,8 +214,8 @@ describe.each(LESSONS.filter((m) => hasLesson(m.id)))("lesson $id", (meta) => {
       expect(c.text.pl).not.toBe(c.text.en);
       expect(c.source).toMatch(/^https:\/\//);
     }
-    expect(lesson.factCard.simplified.length).toBeGreaterThanOrEqual(1);
-    for (const s of lesson.factCard.simplified) {
+    expect(card.simplified.length).toBeGreaterThanOrEqual(1);
+    for (const s of card.simplified) {
       expect(s.en.trim()).not.toBe("");
       expect(s.de.trim()).not.toBe("");
       expect(s.pl.trim()).not.toBe("");
@@ -341,6 +346,9 @@ describe("content counts", () => {
       for (const x of diagramLabels(l, ["pl"]))
         if (x.text.includes("Bartek")) hits.push(`${l.id} ${x.where}: ${x.text}`);
     }
+    for (const f of FACTS.values())
+      for (const s of polishStrings(f))
+        if (s.includes("Bartek")) hits.push(`${f.lessonId} facts: ${s}`);
     expect(hits).toEqual([]);
   }, 120_000);
 });

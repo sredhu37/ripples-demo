@@ -1,20 +1,26 @@
 import { LessonIcon } from "./appIcons";
-import { hasLesson, getLesson } from "../content";
+import { fetchFacts, useApi, type LessonFacts } from "../api";
+import { hasLesson } from "../content";
 import { t } from "../i18n";
-import { LESSONS, getLessonTitle } from "../lessons";
+import { getLessonTitle, type LessonMeta } from "../lessons";
 import { resolveFactText } from "../lesson/types";
 import type { Lang } from "../progress";
+import { LoadError, Loading } from "./ApiStatus";
 import { LangSwitch } from "./LangSwitch";
 
 interface Props {
   lang: Lang;
+  /** Every lesson in order, from the curriculum. */
+  lessons: LessonMeta[];
   onLang?: (l: Lang) => void;
   onClose: () => void;
+  /** Where the fact cards come from. Tests pass a stub. */
+  load?: () => Promise<LessonFacts[]>;
 }
 
 /** Parent view: what each lesson claims, with sources in EN, DE, and PL. */
-export function FactCards({ lang, onLang, onClose }: Props) {
-  const built = LESSONS.filter((l) => hasLesson(l.id));
+export function FactCards({ lang, lessons, onLang, onClose, load = fetchFacts }: Props) {
+  const { result, retry } = useApi(load);
   return (
     <main className="screen">
       <header className="topbar">
@@ -26,9 +32,29 @@ export function FactCards({ lang, onLang, onClose }: Props) {
           </button>
         </div>
       </header>
-      {built.length === 0 && <p>{t(lang, "noLessons")}</p>}
+      {result.state === "loading" && <Loading lang={lang} />}
+      {result.state === "error" && <LoadError lang={lang} onRetry={retry} />}
+      {result.state === "ok" && <Cards lang={lang} lessons={lessons} facts={result.data} />}
+    </main>
+  );
+}
+
+function Cards({
+  lang,
+  lessons,
+  facts,
+}: {
+  lang: Lang;
+  lessons: LessonMeta[];
+  facts: LessonFacts[];
+}) {
+  const byId = new Map(facts.map((f) => [f.lessonId, f]));
+  const built = lessons.filter((l) => hasLesson(l.id) && byId.has(l.id));
+  if (built.length === 0) return <p>{t(lang, "noLessons")}</p>;
+  return (
+    <>
       {built.map((meta) => {
-        const card = getLesson(meta.id)!.factCard;
+        const card = byId.get(meta.id)!;
         return (
           <article key={meta.id} className="panel fact-card">
             <h2>
@@ -54,6 +80,6 @@ export function FactCards({ lang, onLang, onClose }: Props) {
           </article>
         );
       })}
-    </main>
+    </>
   );
 }
