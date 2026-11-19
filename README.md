@@ -12,7 +12,7 @@ browser -> React app (Vite :5173) -> /api -> Go API (:8080) -> MySQL (:3306)
 
 ### Prerequisites
 
-- Node.js 22.12 or newer, with npm
+- Node.js 26 (current LTS), with npm
 - Go 1.24 or newer
 - MySQL 8.4
 
