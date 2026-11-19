@@ -12,14 +12,21 @@ browser -> React app (Vite :5173) -> /api -> Go API (:8080) -> MySQL (:3306)
 
 ### Prerequisites
 
-- Node.js 26 (current LTS), with npm
+- Node.js 26 (current LTS), with npm, installed through [nvm](https://github.com/nvm-sh/nvm)
 - Go 1.24 or newer
 - MySQL 8.4
 
 On macOS with Homebrew:
 
 ```bash
-brew install node go mysql@8.4
+brew install go mysql@8.4
+```
+
+Node through nvm (install nvm first: [nvm install guide](https://github.com/nvm-sh/nvm#installing-and-updating)). The repo's `.nvmrc` pins Node 26:
+
+```bash
+nvm install
+nvm use
 ```
 
 ### Run locally
