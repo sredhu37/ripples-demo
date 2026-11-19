@@ -6,43 +6,66 @@ Ripples is a kids' money and economics app: lessons told by Otto the otter, in E
 
 ## Run it locally
 
-You need Node.js 22.12 or newer and npm.
+```
+browser -> React app (Vite :5173) -> /api -> Go API (:8080) -> MySQL (:3306)
+```
+
+### Prerequisites
+
+- Node.js 26 (current LTS), with npm, installed through [nvm](https://github.com/nvm-sh/nvm)
+- Go 1.24 or newer
+- MySQL 8.4
+
+On macOS with Homebrew:
+
+```bash
+brew install go mysql@8.4
+```
+
+Node through nvm (install nvm first: [nvm install guide](https://github.com/nvm-sh/nvm#installing-and-updating)). The repo's `.nvmrc` pins Node 26:
+
+```bash
+nvm install
+nvm use
+```
+
+### Run locally
+
+Start the database, then load the schema and the data. `db/seed.sql` is the source of truth for all curriculum text.
+
+```bash
+export PATH="$(brew --prefix mysql@8.4)/bin:$PATH"
+brew services start mysql@8.4
+
+mysql -u root -e "CREATE DATABASE ripples; CREATE USER 'ripples'@'localhost' IDENTIFIED BY 'ripples'; GRANT ALL ON ripples.* TO 'ripples'@'localhost';"
+mysql -u ripples -pripples ripples < db/schema.sql
+mysql -u ripples -pripples ripples < db/seed.sql
+```
+
+Start the backend service. `MYSQL_DSN` is `user:password@tcp(host:port)/database`; `PORT` defaults to 8080.
+
+```bash
+cd backend
+MYSQL_DSN='ripples:ripples@tcp(localhost:3306)/ripples' go run .
+```
+
+Start the frontend in another terminal. Vite forwards `/api` to `localhost:8080`.
 
 ```bash
 npm ci
 npm run dev
 ```
 
-Other commands: `npm run test`, `npm run lint`, `npm run typecheck`, `npm run build`, `npm run check:bundle` (after a build: fails if curriculum text ended up in the bundle).
+Open http://localhost:5173. Without the backend running, the app shows "Can't reach Ripples right now".
 
-`npm run dev` alone shows "Can't reach Ripples right now": the lesson titles, fact cards and timeline come from the API. Run the full stack below.
+## Tests and checks
 
-## Run the full stack
+- Frontend: `npm run test`, `npm run lint`, `npm run typecheck`, `npm run build`, `npm run check:bundle` (after a build: fails if curriculum text ended up in the bundle).
+- Backend: `cd backend && go test ./...`. With `MYSQL_DSN` set, the tests also check the loaded data (counts, at least 5 sourced claims per lesson, links between tables).
 
-```
-browser -> React app (Vite :5173) -> /api -> Go API (:8080) -> MySQL (:3306)
-```
+## API
 
-You need Go 1.24 or newer and MySQL 8.4.
-
-1. Create a database and a user, for example `ripples` / `ripples`.
-2. Load the schema, then the data. `db/seed.sql` is the source of truth for all curriculum text.
-
-   ```bash
-   mysql -u ripples -p ripples < db/schema.sql
-   mysql -u ripples -p ripples < db/seed.sql
-   ```
-
-3. Start the API. `MYSQL_DSN` is `user:password@tcp(host:port)/database`; `PORT` defaults to 8080.
-
-   ```bash
-   cd backend
-   MYSQL_DSN='ripples:ripples@tcp(localhost:3306)/ripples' go run .
-   ```
-
-4. In another terminal, `npm run dev`. Vite forwards `/api` to `localhost:8080`.
-
-API, all read-only:
+All endpoints are read-only.
 
 | Endpoint                      | Returns                                                                    |
 | ----------------------------- | -------------------------------------------------------------------------- |
@@ -51,8 +74,6 @@ API, all read-only:
 | `GET /api/lessons/{id}/facts` | One lesson's fact card, 404 if unknown                                     |
 | `GET /api/timeline`           | Eras, regions, events and meanwhile cards                                  |
 | `GET /api/healthz`            | `ok` when MySQL answers, 503 otherwise                                     |
-
-Backend tests: `cd backend && go test ./...`. With `MYSQL_DSN` set, they also check the loaded data (counts, at least 5 sourced claims per lesson, links between tables).
 
 ## Licence
 
